@@ -1,0 +1,42 @@
+# SigmaLandsExtension Configuration
+# This plugin integrates with the Lands plugin to manage zone permissions
+
+# Restricted Areas Configuration
+# Format: restricted-areas -> LandName -> AreaName -> [permissions]
+restricted-areas:
+  MembersZone:
+    zone1:
+      - youtube.premium1
+    zone2:
+      - youtube.premium1
+      - youtube.premium2
+    zone3:
+      - youtube.premium1
+      - youtube.premium2
+      - youtube.premium3
+  
+  # Example: Another land with different restrictions
+  SigmaCity:
+    vip-area:
+      - vip.access
+      - premium.member
+    admin-zone:
+      - admin.access
+      - staff.permission
+
+# Launch Pad Settings
+launch-pad:
+  enabled: true
+  power: 1.5  # Launch force (0.5 = gentle, 2.0 = strong)
+  sound: true
+  particles: true
+
+# Debug Settings
+debug:
+  enabled: true
+  log-permission-checks: true
+
+# Messages
+messages:
+  no-permission: "§cYou don't have all required permissions to enter this area!"
+  missing-lands: "§cLands plugin is required but not found!"
