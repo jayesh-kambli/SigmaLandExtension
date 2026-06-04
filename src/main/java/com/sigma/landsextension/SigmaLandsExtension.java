@@ -25,6 +25,9 @@ public class SigmaLandsExtension extends JavaPlugin {
         zoneManager = new ZoneManager(this);
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(zoneManager, landsAPI), this);
 
+        // Register commands
+        getCommand("sigmareload").setExecutor(new com.sigma.landsextension.commands.ReloadCommand(this));
+
         getLogger().info("SigmaLandsExtension enabled successfully with Lands API!");
     }
 

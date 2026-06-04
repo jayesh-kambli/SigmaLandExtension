@@ -33,7 +33,7 @@ launch-pad:
 
 # Debug Settings
 debug:
-  enabled: true
+  enabled: false
   log-permission-checks: true
 
 # Messages

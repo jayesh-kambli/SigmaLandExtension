@@ -48,23 +48,30 @@ public class PlayerMoveListener implements Listener {
             // ❌ Player missing permission → deny entry and push out
             event.setCancelled(true);
 
-            // Untrust if previously trusted
+            // Untrust if previously trusted (handle owner exceptions)
             if (area.isTrusted(player.getUniqueId())) {
-                area.untrustPlayer(player.getUniqueId());
+                try {
+                    area.untrustPlayer(player.getUniqueId());
+                } catch (Exception e) {
+                    // Silently handle untrust exceptions (e.g., owner can't be untrusted)
+                    if (SigmaLandsExtension.getInstance().getConfig().getBoolean("debug.enabled", false)) {
+                        SigmaLandsExtension.getInstance().getLogger().info("Could not untrust player " + player.getName() + " (likely owner): " + e.getMessage());
+                    }
+                }
             }
 
             // Send warning message
             player.sendMessage(ChatColor.RED + "You don't have access to this area (" + areaName + ").");
 
             // Schedule launch pad effect on main thread to avoid async issues
-            Bukkit.getScheduler().runTask(SigmaLandsExtension.getInstance(), () -> {
+            player.getScheduler().run(SigmaLandsExtension.getInstance(), task -> {
                 // Check if launch pad is enabled
                 if (!SigmaLandsExtension.getInstance().getConfig().getBoolean("launch-pad.enabled", true)) {
                     // Fallback to teleportation if launch pad is disabled
                     if (event.getFrom() != null && event.getFrom().getSpawn() != null) {
-                        player.teleport(event.getFrom().getSpawn().toLocation());
+                        player.teleportAsync(event.getFrom().getSpawn().toLocation());
                     } else {
-                        player.teleport(player.getWorld().getSpawnLocation());
+                        player.teleportAsync(player.getWorld().getSpawnLocation());
                     }
                     return;
                 }
@@ -98,11 +105,13 @@ public class PlayerMoveListener implements Listener {
                 if (SigmaLandsExtension.getInstance().getConfig().getBoolean("launch-pad.particles", true)) {
                     player.getWorld().spawnParticle(org.bukkit.Particle.CLOUD, playerLoc, 20, 0.5, 0.5, 0.5, 0.1);
                 }
-            });
+            }, null);
 
-            // Debug Log
-            SigmaLandsExtension.getInstance().getLogger().info("[SigmaLandsExtension] Player " + player.getName()
-                    + " denied access to " + areaName + " (missing permission). Teleported out.");
+            // Debug Log (only if debug is enabled)
+            if (SigmaLandsExtension.getInstance().getConfig().getBoolean("debug.enabled", false)) {
+                SigmaLandsExtension.getInstance().getLogger().info("[SigmaLandsExtension] Player " + player.getName()
+                        + " denied access to " + areaName + " (missing permission). Launched away.");
+            }
         }
     }
 }

@@ -25,7 +25,9 @@ public class ZoneManager {
             for (String zoneKey : areaSection.getKeys(false)) {
                 List<String> perms = areaSection.getStringList(zoneKey);
                 zonePermissions.put(zoneKey, perms);
-                plugin.getLogger().info("Loaded zone " + zoneKey + " with permissions: " + perms);
+                if (plugin.getConfig().getBoolean("debug.enabled", false)) {
+                    plugin.getLogger().info("Loaded zone " + zoneKey + " with permissions: " + perms);
+                }
             }
         }
     }
@@ -37,5 +39,9 @@ public class ZoneManager {
     public void reloadZones() {
         plugin.reloadConfig();
         loadZones();
+    }
+
+    public int getZoneCount() {
+        return zonePermissions.size();
     }
 }
